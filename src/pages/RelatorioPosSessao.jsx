@@ -418,7 +418,7 @@ export default function RelatorioPosSessao() {
             </div>
           </div>
 
-          {/* Preview card */}
+          {/* Preview card — no-print prevents it rendering as duplicate content during print */}
           {(showPreview || hasContent) && (
             <div className="card no-print" style={{ marginBottom: 16 }}>
               <div className="card-header">
