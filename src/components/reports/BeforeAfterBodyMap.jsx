@@ -130,7 +130,7 @@ export default function BeforeAfterBodyMap({ beforeMap, afterMap, onBeforeChange
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 28 }}>
+      <div className="body-map-print-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 28 }}>
         <BodyPanel
           label="Estado inicial — Antes"
           accent="var(--warning)"

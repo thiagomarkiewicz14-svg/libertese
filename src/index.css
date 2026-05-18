@@ -1113,28 +1113,82 @@ td {
 .no-print { }
 
 @media print {
-  /* Hide all UI chrome */
+  /* ─── Hide all UI chrome ─────────────────────────────────────────────────── */
   .sidebar,
   .main-header,
   .header,
   .page-toolbar,
   .no-print { display: none !important; }
 
-  /* Show only the print area */
+  /* ─── Show only the print area ───────────────────────────────────────────── */
   body * { visibility: hidden; }
   .report-print-area,
   .report-print-area * { visibility: visible; }
+
+  /*
+   * position: absolute (not fixed) so content paginates across pages.
+   * position: fixed clips overflow to one viewport height — the body map
+   * at the bottom of a long report gets cut off entirely.
+   */
   .report-print-area {
     display: block !important;
-    position: fixed;
-    top: 0; left: 0;
+    position: absolute !important;
+    top: 0;
+    left: 0;
     width: 100%;
-    background: #fff;
+    background: #fff !important;
     z-index: 99999;
   }
 
-  /* Body map renders cleanly in print */
-  .body-silhouette { break-inside: avoid; }
-  .body-point { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  /* ─── Body silhouette container ──────────────────────────────────────────── */
+  .body-silhouette {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    height: 420px !important;           /* prevent mobile override collapsing it */
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    background: #f0ecff !important;     /* solid fallback for gradient */
+    border: 1px solid #ccc4ee !important;
+  }
+
+  /* ─── Body outline lines ─────────────────────────────────────────────────── */
+  .body-line {
+    display: block !important;
+    visibility: visible !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    background: #a090d8 !important;     /* solid fallback for rgba(123,92,255,0.24) */
+  }
+  .body-line-head,
+  .body-line-torso,
+  .body-line-hips {
+    background: transparent !important;
+    border-color: #a090d8 !important;   /* solid fallback for rgba borders */
+  }
+  .body-line-leg-left,
+  .body-line-leg-right,
+  .body-line-arm-left,
+  .body-line-arm-right {
+    background: #a090d8 !important;
+  }
+
+  /* ─── Body point buttons ─────────────────────────────────────────────────── */
+  .body-point {
+    display: grid !important;
+    visibility: visible !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  .body-point-none  { background: #e8ede6 !important; color: #666 !important; }
+  .body-point-low   { background: #c6ddc8 !important; color: #2d6630 !important; }
+  .body-point-mid   { background: #f0d898 !important; color: #7a5820 !important; }
+  .body-point-high  { background: #e8a89c !important; color: #8b2a1a !important; }
+
+  /* ─── Body map grid — force 2 columns in print ───────────────────────────── */
+  .body-map-print-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px !important;
+  }
 }
 
