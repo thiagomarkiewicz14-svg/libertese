@@ -2773,3 +2773,680 @@ tbody tr:hover td {
     box-shadow: none;
   }
 }
+
+/* ─── Clinical Relationship Insights (CRI) ──────────────────────────────────── */
+
+.cri-section {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 28px 28px 22px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.cri-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cri-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--text);
+  margin: 4px 0 0;
+}
+
+.cri-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .cri-summary-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.cri-summary-card {
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  border: 1px solid transparent;
+  transition: box-shadow 0.2s;
+}
+
+.cri-summary-card:hover {
+  box-shadow: var(--shadow-subtle);
+}
+
+.cri-summary-high {
+  background: var(--danger-light);
+  border-color: rgba(155, 63, 53, 0.15);
+}
+
+.cri-summary-medium {
+  background: var(--warning-light);
+  border-color: rgba(156, 109, 41, 0.15);
+}
+
+.cri-summary-low {
+  background: var(--success-light);
+  border-color: rgba(63, 114, 86, 0.15);
+}
+
+.cri-summary-clinical {
+  background: var(--primary-bg);
+  border-color: var(--border-light);
+}
+
+.cri-summary-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 750;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.cri-summary-label {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Priority strip */
+.cri-priority-strip {
+  background: linear-gradient(135deg, rgba(123, 92, 255, 0.05), rgba(217, 54, 214, 0.04));
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.cri-priority-label {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.cri-priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cri-priority-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.cri-priority-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.cri-priority-name {
+  font-weight: 650;
+  font-size: 13.5px;
+  color: var(--text);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  flex: 1;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.15s;
+}
+
+.cri-priority-name:hover {
+  text-decoration-color: var(--primary);
+  color: var(--primary);
+}
+
+.cri-priority-reason {
+  font-size: 12px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.cri-priority-days {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-3);
+  background: var(--surface-2);
+  padding: 2px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* Filter bar */
+.cri-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+
+.cri-filter-btn {
+  font-size: 12px;
+  font-weight: 650;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cri-filter-btn:hover {
+  background: var(--primary-bg);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.cri-filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* Badges */
+.cri-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 20px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.cri-badge-high {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.cri-badge-medium {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.cri-badge-low {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+/* Insight list */
+.cri-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.cri-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface);
+  transition: background 0.15s;
+}
+
+.cri-item:last-child {
+  border-bottom: none;
+}
+
+.cri-item:hover {
+  background: rgba(123, 92, 255, 0.025);
+}
+
+.cri-item-high {
+  border-left: 3px solid var(--danger);
+}
+
+.cri-item-medium {
+  border-left: 3px solid var(--warning);
+}
+
+.cri-item-low {
+  border-left: 3px solid var(--success);
+}
+
+.cri-category-icon {
+  font-size: 16px;
+  color: var(--text-3);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.cri-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cri-item-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.cri-item-type {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+
+.cri-item-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  display: block;
+  margin-bottom: 4px;
+  transition: color 0.15s;
+}
+
+.cri-item-name:hover {
+  color: var(--primary);
+}
+
+.cri-item-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0 0 3px;
+  line-height: 1.5;
+}
+
+.cri-item-hint {
+  font-size: 12px;
+  color: var(--text-3);
+  margin: 0 0 6px;
+  font-style: italic;
+}
+
+.cri-item-meta {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 600;
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.cri-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.cri-action-btn {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background: var(--primary-bg);
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.cri-action-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.cri-action-sm {
+  padding: 3px 10px;
+  font-size: 11px;
+}
+
+.cri-dismiss-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cri-dismiss-btn:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.cri-empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--text-3);
+}
+
+.cri-empty h4 {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text-2);
+  margin: 10px 0 6px;
+}
+
+.cri-empty p {
+  font-size: 13px;
+}
+
+/* CRI Modal */
+.cri-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 26, 46, 0.44);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 800;
+  backdrop-filter: blur(4px);
+}
+
+.cri-modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-premium);
+  width: 100%;
+  max-width: 420px;
+  margin: 16px;
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.cri-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.cri-modal-kicker {
+  font-size: 10.5px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cri-modal-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.cri-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.cri-modal-close:hover {
+  background: var(--surface-2);
+}
+
+.cri-modal-body {
+  padding: 16px 22px;
+}
+
+.cri-modal-desc {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin: 0 0 8px;
+}
+
+.cri-modal-action-hint {
+  font-size: 13px;
+  color: var(--primary);
+  font-style: italic;
+  margin: 0;
+}
+
+.cri-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 22px 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ─── Patient Journey Intelligence (PJI) ───────────────────────────────────── */
+
+.pji-block {
+  padding: 0;
+  overflow: hidden;
+}
+
+.pji-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.pji-title {
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--text);
+  margin: 4px 0 0;
+}
+
+.pji-body {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+}
+
+@media (max-width: 700px) {
+  .pji-body { grid-template-columns: 1fr; }
+}
+
+.pji-score-side {
+  padding: 22px 20px;
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface-2);
+}
+
+.pji-gauge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.pji-gauge-label {
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.pji-score-meta {
+  width: 100%;
+}
+
+.pji-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-light);
+  gap: 8px;
+}
+
+.pji-meta-row:last-child {
+  border-bottom: none;
+}
+
+.pji-meta-label {
+  font-size: 11.5px;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.pji-meta-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pji-alerts-side {
+  padding: 20px 22px;
+}
+
+.pji-alerts-label {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.pji-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pji-alert {
+  border-radius: var(--radius-xs);
+  padding: 10px 14px;
+  border-left: 3px solid transparent;
+}
+
+.pji-alert-high {
+  background: var(--danger-light);
+  border-color: var(--danger);
+}
+
+.pji-alert-medium {
+  background: var(--warning-light);
+  border-color: var(--warning);
+}
+
+.pji-alert-low {
+  background: var(--success-light);
+  border-color: var(--success);
+}
+
+.pji-alert-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.pji-alert-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pji-alert-desc {
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.pji-no-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0;
+  gap: 8px;
+}
+
+.pji-no-alerts-icon {
+  font-size: 22px;
+  color: var(--success);
+}
+
+.pji-no-alerts p {
+  font-size: 13px;
+  color: var(--text-3);
+  margin: 0;
+}
+
+.pji-next-action {
+  background: var(--primary-bg);
+  border-radius: var(--radius-xs);
+  padding: 14px 16px;
+  border: 1px solid rgba(123, 92, 255, 0.14);
+}
+
+.pji-next-label {
+  font-size: 10.5px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.pji-next-text {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.pji-action-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

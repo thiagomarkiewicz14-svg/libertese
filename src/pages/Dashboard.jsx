@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { ai } from '../services/ai'
 import ClinicalIntelligence from '../components/dashboard/ClinicalIntelligence'
+import ClinicalRelationshipInsights from '../components/dashboard/ClinicalRelationshipInsights'
 import { calculateClinicalProgress, getPatientRisk } from '../domain/clinical'
 
 const STATUS_COLOR = { Agendado: '#8FA090', Confirmado: '#1A4A7A', Realizado: '#2A6E47', Falta: '#A83228', Cancelado: '#8FA090' }
@@ -240,6 +241,8 @@ export default function Dashboard() {
           ))}
         </div>
       </section>
+
+      <ClinicalRelationshipInsights onOpenPatient={id => navigate(`/prontuario/${id}`)} />
 
       <div className="dashboard-grid" style={{ gap: 22 }}>
         <div>

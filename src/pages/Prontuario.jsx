@@ -9,6 +9,7 @@ import BodyMap from '../components/clinical/BodyMap'
 import BeforeAfterComparison from '../components/clinical/BeforeAfterComparison'
 import PatientPortal from '../components/patient/PatientPortal'
 import PatientClinicalCommandCenter from '../components/clinical/PatientClinicalCommandCenter'
+import PatientJourneyIntelligence from '../components/clinical/PatientJourneyIntelligence'
 
 function Section({ title, children }) {
   return (
@@ -150,13 +151,18 @@ export default function Prontuario() {
           </div>
 
           {tab === 'visao' && (
-            <PatientClinicalCommandCenter
-              patient={patient}
-              slots={agendaSlots}
-              prontuario={prontuario}
-              onOpenJourney={() => setTab('jornada')}
-              onOpenMap={() => setTab('mapa')}
-            />
+            <>
+              <PatientClinicalCommandCenter
+                patient={patient}
+                slots={agendaSlots}
+                prontuario={prontuario}
+                onOpenJourney={() => setTab('jornada')}
+                onOpenMap={() => setTab('mapa')}
+              />
+              <div style={{ marginTop: 20 }}>
+                <PatientJourneyIntelligence patient={patient} />
+              </div>
+            </>
           )}
 
           {tab === 'anamnese' && (
