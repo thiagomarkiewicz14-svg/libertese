@@ -352,7 +352,7 @@ tbody tr:hover td {
 
 .avatar {
   background: linear-gradient(135deg, var(--olive-700), var(--champagne));
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(139,92,246,0.30);
 }
 
 .empty-state {
@@ -2321,9 +2321,9 @@ tbody tr:hover td {
 
 .portal-step-list span {
   padding: 12px 14px;
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(139,92,246,0.14);
   border-radius: 16px;
-  background: rgba(255,255,255,0.56);
+  background: rgba(21,17,36,0.80);
   color: var(--ink-soft);
   font-size: 13px;
   line-height: 1.45;
