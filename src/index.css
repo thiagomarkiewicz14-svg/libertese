@@ -4,49 +4,49 @@
   --primary: #8B5CF6;
   --primary-light: #A78BFA;
   --primary-dark: #7C3AED;
-  --primary-bg: rgba(139,92,246,0.12);
+  --primary-bg: rgba(139,92,246,0.07);
 
   --gold: #A78BFA;
-  --gold-light: rgba(196,181,253,0.35);
-  --gold-bg: rgba(167,139,250,0.12);
+  --gold-light: rgba(167,139,250,0.22);
+  --gold-bg: rgba(139,92,246,0.07);
 
-  --surface: #151124;
-  --surface-2: rgba(29,24,48,0.75);
-  --surface-3: rgba(139,92,246,0.12);
-  --bg: #131020;
-  --border: rgba(139,92,246,0.16);
-  --border-light: rgba(139,92,246,0.10);
+  --surface: #161B26;
+  --surface-2: rgba(28,36,50,0.80);
+  --surface-3: rgba(32,41,58,0.60);
+  --bg: #101620;
+  --border: rgba(255,255,255,0.07);
+  --border-light: rgba(255,255,255,0.05);
 
-  --text: #EDE9FE;
-  --text-2: rgba(196,181,253,0.78);
-  --text-3: rgba(167,139,250,0.50);
-  --text-inv: #0F0B1A;
+  --text: #E8F0FC;
+  --text-2: #8B9DB8;
+  --text-3: #4A6080;
+  --text-inv: #0D1117;
 
   --success: #34D399;
-  --success-light: rgba(52,211,153,0.14);
+  --success-light: rgba(52,211,153,0.10);
   --warning: #FBBF24;
-  --warning-light: rgba(251,191,36,0.14);
+  --warning-light: rgba(251,191,36,0.10);
   --danger: #F87171;
-  --danger-light: rgba(248,113,113,0.14);
+  --danger-light: rgba(248,113,113,0.10);
   --info: #60A5FA;
-  --info-light: rgba(96,165,250,0.14);
-  --muted-light: rgba(139,92,246,0.10);
+  --info-light: rgba(96,165,250,0.10);
+  --muted-light: rgba(255,255,255,0.04);
 
-  --sidebar-w: 248px;
-  --header-h: 68px;
-  --radius: 12px;
-  --radius-sm: 10px;
+  --sidebar-w: 244px;
+  --header-h: 64px;
+  --radius: 10px;
+  --radius-sm: 8px;
   --radius-xs: 6px;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.30);
   --shadow: 0 4px 14px rgba(0,0,0,0.40);
   --shadow-md: 0 12px 28px rgba(0,0,0,0.50);
   --shadow-lg: 0 24px 60px rgba(0,0,0,0.60);
-  --ring: 0 0 0 3px rgba(139,92,246,0.28);
+  --ring: 0 0 0 3px rgba(139,92,246,0.22);
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #0F0B1A;
+  background: #0D1117;
   color: var(--text);
   line-height: 1.55;
   min-height: 100vh;
@@ -234,13 +234,13 @@ table { width: 100%; border-collapse: collapse; }
 th {
   text-align: left; padding: 11px 16px; font-size: 11px;
   font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px;
-  color: var(--text-3); background: rgba(15,11,26,0.80);
+  color: var(--text-3); background: rgba(13,17,23,0.80);
   border-bottom: 1px solid var(--border);
 }
 
 td { padding: 13px 16px; font-size: 13.5px; color: var(--text); border-bottom: 1px solid var(--border-light); }
 tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: rgba(139,92,246,0.08); }
+tbody tr:hover td { background: rgba(255,255,255,0.04); }
 
 /* ─── Badge ─────────────────────────────────────────── */
 .badge {
@@ -267,8 +267,8 @@ tbody tr:hover td { background: rgba(139,92,246,0.08); }
 }
 
 .modal {
-  background: rgba(21,17,36,0.96); border-radius: var(--radius);
-  border: 1px solid rgba(139,92,246,0.18);
+  background: rgba(22,27,38,0.96); border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.09);
   box-shadow: var(--shadow-lg); width: 100%; max-width: 540px;
   max-height: 92vh; overflow-y: auto;
   animation: modalIn 0.18s ease;
@@ -286,7 +286,7 @@ tbody tr:hover td { background: rgba(139,92,246,0.08); }
   padding: 22px 26px 16px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: rgba(21,17,36,0.98); z-index: 1;
+  position: sticky; top: 0; background: rgba(22,27,38,0.98); z-index: 1;
 }
 
 .modal-title { font-size: 17px; color: var(--text); }
@@ -315,7 +315,7 @@ tbody tr:hover td { background: rgba(139,92,246,0.08); }
 .form-control {
   width: 100%; padding: 9px 13px;
   border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 13.5px; color: var(--text); background: rgba(15,11,26,0.75);
+  font-size: 13.5px; color: var(--text); background: rgba(13,17,23,0.75);
   transition: border-color 0.12s, box-shadow 0.12s;
 }
 .form-control:focus {
@@ -336,7 +336,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 .search-bar input {
   width: 100%; padding: 9px 13px 9px 38px;
   border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 13.5px; background: rgba(15,11,26,0.75); color: var(--text);
+  font-size: 13.5px; background: rgba(13,17,23,0.75); color: var(--text);
   transition: border-color 0.12s;
 }
 .search-bar input:focus { border-color: var(--primary); box-shadow: var(--ring); }
@@ -371,11 +371,11 @@ textarea.form-control { resize: vertical; min-height: 80px; }
   animation: toastIn 0.2s ease; max-width: 340px;
   display: flex; align-items: center; gap: 8px;
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(139,92,246,0.20);
+  border: 1px solid rgba(255,255,255,0.09);
 }
-.toast-success { background: rgba(21,17,36,0.95); color: var(--success); border-color: rgba(52,211,153,0.25); }
-.toast-error { background: rgba(21,17,36,0.95); color: var(--danger); border-color: rgba(248,113,113,0.25); }
-.toast-info { background: rgba(21,17,36,0.95); color: var(--text); border-color: rgba(139,92,246,0.25); }
+.toast-success { background: rgba(22,27,38,0.95); color: var(--success); border-color: rgba(52,211,153,0.25); }
+.toast-error { background: rgba(22,27,38,0.95); color: var(--danger); border-color: rgba(248,113,113,0.25); }
+.toast-info { background: rgba(22,27,38,0.95); color: var(--text); border-color: rgba(96,165,250,0.25); }
 
 @keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -409,7 +409,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 .agenda-slot {
   padding: 10px 12px; border-radius: var(--radius-sm);
   margin-bottom: 7px; cursor: pointer; transition: all 0.15s;
-  border-left: 3px solid transparent; background: rgba(21,17,36,0.78);
+  border-left: 3px solid transparent; background: rgba(22,27,38,0.78);
   border: 1px solid var(--border); border-left-width: 3px;
 }
 .agenda-slot:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
@@ -498,7 +498,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 
 /* Refined app shell and design system */
 body {
-  background: #0F0B1A;
+  background: #0D1117;
   color: var(--text);
 }
 
@@ -524,8 +524,8 @@ textarea:focus-visible {
 }
 
 .sidebar {
-  background: rgba(8,6,16,0.97);
-  border-right: 1px solid rgba(139,92,246,0.14);
+  background: rgba(11,15,24,0.97);
+  border-right: 1px solid rgba(255,255,255,0.07);
   box-shadow: 4px 0 40px rgba(0,0,0,0.65);
 }
 
@@ -590,20 +590,20 @@ textarea:focus-visible {
 }
 
 .nav-item:hover {
-  background: rgba(139,92,246,0.10);
+  background: rgba(255,255,255,0.05);
   color: #C4B5FD;
 }
 
 .nav-item.active {
-  background: rgba(139,92,246,0.16);
-  color: #C4B5FD;
-  border-color: rgba(139,92,246,0.30);
-  box-shadow: inset 0 0 24px rgba(139,92,246,0.08);
+  background: rgba(255,255,255,0.05);
+  color: #E8F0FC;
+  border-color: transparent;
+  box-shadow: inset 2px 0 0 #8B5CF6;
 }
 
 .nav-item.active .nav-icon {
-  background: rgba(139,92,246,0.26);
-  color: #C4B5FD;
+  background: transparent;
+  color: #A78BFA;
 }
 
 .sidebar-footer {
@@ -613,9 +613,9 @@ textarea:focus-visible {
 .header {
   height: var(--header-h);
   padding: 0 clamp(18px, 3vw, 36px);
-  background: rgba(12,9,20,0.84);
+  background: rgba(10,14,20,0.84);
   backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(139,92,246,0.14);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
   box-shadow: none;
 }
 
@@ -686,7 +686,7 @@ textarea:focus-visible {
 .servico-card {
   border-radius: 8px;
   border-color: var(--border-light);
-  box-shadow: 0 1px 2px rgba(123,92,255,0.04);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.20);
 }
 
 .card-header {
@@ -933,7 +933,7 @@ td {
     transform: none;
     border-right: none;
     border-top: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 -10px 28px rgba(123,92,255,0.16);
+    box-shadow: 0 -10px 28px rgba(0,0,0,0.30);
   }
 
   .sidebar-logo,
@@ -1160,7 +1160,7 @@ td {
     visibility: visible !important;
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
-    background: #a090d8 !important;     /* solid fallback for rgba(123,92,255,0.24) */
+    background: rgba(255,255,255,0.18) !important;     /* body-line print fallback */
   }
   .body-line-head,
   .body-line-torso,
