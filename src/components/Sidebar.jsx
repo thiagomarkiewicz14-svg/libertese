@@ -1,26 +1,35 @@
 import { NavLink, useLocation } from 'react-router-dom'
 
 const NAV = [
-  { section: 'Clínica', items: [
-    { to: '/', icon: 'OV', label: 'Dashboard' },
-    { to: '/agenda', icon: 'AG', label: 'Agenda' },
-  ]},
-  { section: 'Pacientes', items: [
-    { to: '/pacientes', icon: 'PC', label: 'Pacientes' },
-    { to: '/prontuario', icon: 'CL', label: 'Centro clínico' },
-    { to: '/sessoes', icon: 'SS', label: 'Sessões' },
-    { to: '/relatorio-pos-sessao', icon: 'RP', label: 'Pós-sessão' },
-    { to: '/area-paciente', icon: 'AP', label: 'Portal paciente' },
-  ]},
-  { section: 'Gestão', items: [
-    { to: '/crm', icon: 'RL', label: 'Relacionamento' },
-    { to: '/financeiro', icon: 'FN', label: 'Financeiro' },
-  ]},
-  { section: 'Configurações', items: [
-    { to: '/servicos', icon: 'SV', label: 'Serviços' },
-    { to: '/planos', icon: 'PL', label: 'Planos Terapêuticos' },
-    { to: '/equipe', icon: 'EQ', label: 'Equipe' },
-  ]},
+  {
+    section: 'Hoje',
+    items: [
+      { to: '/', icon: 'ID', label: 'Início do dia' },
+      { to: '/agenda', icon: 'AG', label: 'Agenda clínica' },
+    ],
+  },
+  {
+    section: 'Pacientes',
+    items: [
+      { to: '/prontuario', icon: 'JC', label: 'Jornada clínica' },
+      { to: '/pacientes', icon: 'PC', label: 'Lista de pacientes' },
+    ],
+  },
+  {
+    section: 'Inteligência',
+    items: [
+      { to: '/crm', icon: 'IC', label: 'Insights clínicos' },
+    ],
+  },
+  {
+    section: 'Operação',
+    items: [
+      { to: '/financeiro', icon: 'FN', label: 'Financeiro' },
+      { to: '/servicos', icon: 'SV', label: 'Serviços' },
+      { to: '/planos', icon: 'PL', label: 'Planos' },
+      { to: '/equipe', icon: 'EQ', label: 'Equipe' },
+    ],
+  },
 ]
 
 export default function Sidebar() {

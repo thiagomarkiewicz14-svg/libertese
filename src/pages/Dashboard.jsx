@@ -7,6 +7,7 @@ import ClinicalRelationshipInsights from '../components/dashboard/ClinicalRelati
 import { calculateClinicalProgress, getPatientRisk } from '../domain/clinical'
 
 const STATUS_COLOR = { Agendado: '#8FA090', Confirmado: '#1A4A7A', Realizado: '#2A6E47', Falta: '#A83228', Cancelado: '#8FA090' }
+const STATUS_BG = { Agendado: 'rgba(143,160,144,0.10)', Confirmado: 'rgba(26,74,122,0.08)', Realizado: 'rgba(42,110,71,0.08)', Falta: 'rgba(168,50,40,0.08)', Cancelado: 'rgba(143,160,144,0.08)' }
 
 function currency(v) { return `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }
 
@@ -35,13 +36,19 @@ function daysSince(dateStr) {
 }
 
 function serviceInitials(name = '') {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map(part => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+  return name.split(' ').filter(Boolean).map(p => p[0]).join('').slice(0, 2).toUpperCase()
+}
+
+// ── Risk label ────────────────────────────────────────────────────────────────
+function RiskPill({ risk }) {
+  if (!risk || risk.value < 45) return null
+  const color = risk.value >= 70 ? 'var(--danger)' : 'var(--warning)'
+  const bg = risk.value >= 70 ? 'var(--danger-light)' : 'var(--warning-light)'
+  return (
+    <span style={{ fontSize: 10.5, fontWeight: 700, padding: '2px 7px', borderRadius: 999, background: bg, color, letterSpacing: '0.03em' }}>
+      {risk.level}
+    </span>
+  )
 }
 
 export default function Dashboard() {
@@ -49,6 +56,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [aiSummary, setAiSummary] = useState(null)
 
+  // ── Data ──────────────────────────────────────────────────────────────────
   const TODAY = new Date().toISOString().slice(0, 10)
   const THIS_MONTH = new Date().toISOString().slice(0, 7)
 
@@ -98,37 +106,25 @@ export default function Dashboard() {
   const attendanceRate = attendanceBase.length
     ? Math.round((attendanceBase.filter(s => s.status === 'Realizado').length / attendanceBase.length) * 100)
     : 100
+
   const criticalPatients = patients
     .map(patient => ({ patient, risk: getPatientRisk(patient, agendaSlots) }))
     .filter(item => item.risk.value >= 45)
     .sort((a, b) => b.risk.value - a.risk.value)
+
   const dayPriorities = [
     nextSlot && { label: 'Próximo cuidado', title: getPatientById(nextSlot.patientId)?.name || 'Paciente', detail: `${nextSlot.time} · ${getServicoById(nextSlot.serviceId)?.name || 'Serviço'}`, route: '/agenda' },
     criticalPatients[0] && { label: 'Paciente em atenção', title: criticalPatients[0].patient.name, detail: criticalPatients[0].risk.reason, route: `/prontuario/${criticalPatients[0].patient.id}` },
     awaitingReturn[0] && { label: 'Retorno pendente', title: awaitingReturn[0].name, detail: 'Reativar continuidade do tratamento', route: '/crm' },
   ].filter(Boolean)
-  const recommendedMoves = dayPriorities.length ? dayPriorities : [
-    { label: 'Revisão clínica', title: 'Auditar evoluções', detail: 'Atualize registros recentes para manter a jornada narrativa.', route: '/sessoes' },
-    { label: 'Relacionamento', title: 'Nutrir retornos', detail: 'Revise pacientes sem contato e prepare mensagens humanas.', route: '/crm' },
-    { label: 'Protocolos', title: 'Refinar prescrições', detail: 'Ajuste exercícios e próximos passos por perfil clínico.', route: '/planos' },
-  ]
 
-  // ── Operação do dia ──────────────────────────────────────────────────────
   const ACTIVE_SET = new Set(['Agendado', 'Confirmado', 'Realizado'])
-
   const conflictsToday = useMemo(() => {
     const active = agendaSlots.filter(s => ACTIVE_SET.has(s.status))
-    const roomGroups = {}
-    const profGroups = {}
+    const roomGroups = {}, profGroups = {}
     active.forEach(s => {
-      if (s.roomId) {
-        const k = `${s.date}|${s.time}|r${s.roomId}`
-        ;(roomGroups[k] = roomGroups[k] || []).push(s.id)
-      }
-      if (s.professionalId) {
-        const k = `${s.date}|${s.time}|p${s.professionalId}`
-        ;(profGroups[k] = profGroups[k] || []).push(s.id)
-      }
+      if (s.roomId) { const k = `${s.date}|${s.time}|r${s.roomId}`; (roomGroups[k] = roomGroups[k] || []).push(s.id) }
+      if (s.professionalId) { const k = `${s.date}|${s.time}|p${s.professionalId}`; (profGroups[k] = profGroups[k] || []).push(s.id) }
     })
     const conflictIds = new Set()
     Object.values(roomGroups).filter(ids => ids.length > 1).forEach(ids => ids.forEach(id => conflictIds.add(id)))
@@ -140,157 +136,193 @@ export default function Dashboard() {
   const todayRoomIds = [...new Set(todaySlots.filter(s => s.roomId).map(s => s.roomId))]
   const todayProfs = todayProfIds.map(id => getProfessionalById(id)).filter(Boolean)
 
-  const serviceDemandTotals = Object.fromEntries(
-    servicos.map(srv => [srv.id, agendaSlots.filter(s => s.serviceId === srv.id && s.status === 'Realizado').length])
-  )
-  const maxDemandTotal = Math.max(...Object.values(serviceDemandTotals), 1)
+  const todayDateStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
 
+  // ── View ──────────────────────────────────────────────────────────────────
   return (
-    <div className="page-body">
-      <section className="dashboard-hero">
-        <div className="overview-panel">
-          <div className="overview-content">
-            <div className="eyebrow">Visão clínica do dia</div>
-            <h1 className="overview-title">Cuidado organizado para um dia mais leve.</h1>
-            <p className="overview-copy">
-              {todaySlots.length > 0
-                ? `Hoje há ${todaySlots.length} atendimentos no estúdio, com ${pendingSlots.length} ainda em agenda e ${doneSlots.length} já realizados.`
-                : 'Hoje não há atendimentos agendados. Um bom momento para revisar retornos, prontuários e planejamento terapêutico.'}
-            </p>
-            <div className="overview-actions">
-              <button className="btn btn-primary" onClick={() => navigate('/agenda')}>Abrir centro operacional</button>
-              <button className="btn btn-secondary" onClick={() => navigate('/pacientes')}>Ver jornadas clínicas</button>
-              <button className="btn btn-secondary" onClick={() => navigate('/crm')}>Priorizar retornos</button>
-            </div>
+    <div className="page-body dashboard-v2">
+
+      {/* ── 1. COMMAND BAR ─────────────────────────────────────────────────── */}
+      <div className="command-bar">
+        <div className="command-bar-left">
+          <h2 className="command-date">{todayDateStr}</h2>
+          <span className="command-context-tag">{operationalLabel}</span>
+        </div>
+        <div className="command-kpis">
+          <div className="cq-item">
+            <span className="cq-value">{activePatients}</span>
+            <span className="cq-label">em cuidado</span>
+          </div>
+          <div className="cq-sep" />
+          <div className="cq-item">
+            <span className="cq-value">{todaySlots.length}</span>
+            <span className="cq-label">hoje</span>
+          </div>
+          <div className="cq-sep" />
+          <div className="cq-item">
+            <span className="cq-value">{attendanceRate}%</span>
+            <span className="cq-label">aderência</span>
+          </div>
+          <div className="cq-sep" />
+          <div className="cq-item">
+            <span className="cq-value" style={{ color: criticalPatients.length > 0 ? 'var(--warning)' : 'var(--success)' }}>{criticalPatients.length}</span>
+            <span className="cq-label">em atenção</span>
           </div>
         </div>
+        <div className="command-bar-actions">
+          <button className="btn btn-primary btn-sm" onClick={() => navigate('/agenda')}>
+            Agenda completa
+          </button>
+        </div>
+      </div>
 
-        <aside className="clinic-status">
-          <div className="status-panel">
-            <div className="section-kicker">Status operacional</div>
-            <div className="status-number">{operationalLabel}</div>
-            <p className="status-label">
-              {nextSlot
-                ? `Próximo atendimento às ${nextSlot.time}, com ${getPatientById(nextSlot.patientId)?.name || 'paciente'}.`
-                : 'Nenhum atendimento pendente para hoje.'}
-            </p>
-            <div className="status-list">
-              <span>{doneSlots.length} realizados</span>
-              <span>{pendingSlots.length} pendentes</span>
-              <span>{inactivePatients.length} inativos +30d</span>
-            </div>
+      {/* ── 2. AI INSIGHT ──────────────────────────────────────────────────── */}
+      {aiSummary ? (
+        <div className="command-insight insight-banner">
+          <span className="insight-icon" aria-hidden="true" />
+          <div>
+            <div className="insight-label">Copiloto clínico</div>
+            <div className="insight-text">{aiSummary.summary}</div>
+            {aiSummary.insight && <div className="metric-detail" style={{ marginTop: 2 }}>{aiSummary.insight}</div>}
           </div>
-          {aiSummary ? (
-            <div className="insight-banner" style={{ marginBottom: 0 }}>
-              <span className="insight-icon" aria-hidden="true" />
-              <div>
-                <div className="insight-label">Insight do dia</div>
-                <div className="insight-text">{aiSummary.summary}</div>
-                {aiSummary.insight && <div className="metric-detail">{aiSummary.insight}</div>}
-              </div>
-            </div>
-          ) : (
-            <div className="insight-banner skeleton-insight" style={{ marginBottom: 0 }}>
-              <span className="skeleton-dot" />
-              <div>
-                <div className="skeleton-line short" />
-                <div className="skeleton-line" />
-                <div className="skeleton-line small" />
-              </div>
-            </div>
-          )}
-        </aside>
-      </section>
+        </div>
+      ) : (
+        <div className="command-insight insight-banner skeleton-insight">
+          <span className="skeleton-dot" />
+          <div>
+            <div className="skeleton-line short" />
+            <div className="skeleton-line" />
+          </div>
+        </div>
+      )}
 
-      <section className="dashboard-metrics">
-        <div className="metric-card">
-          <div className="metric-label">Pacientes em cuidado</div>
-          <div className="metric-value">{activePatients}</div>
-          <div className="metric-detail">{criticalPatients.length > 0 ? `${criticalPatients.length} requer${criticalPatients.length === 1 ? '' : 'em'} atenção` : 'Carteira clínica estável'}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-label">Ocupação do dia</div>
-          <div className="metric-value">{occupancy}%</div>
-          <div className="metric-detail">{todaySlots.length > 0 ? `${doneSlots.length} concluídos · ${pendingSlots.length} pendentes` : 'Nenhum agendamento hoje'}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-label">Receita do mês</div>
-          <div className="metric-value">{currency(monthRevenue)}</div>
-          <div className="metric-detail">{monthPending > 0 ? `${currency(monthPending)} a receber` : 'Sem pendências de entrada'}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-label">Evolução clínica média</div>
-          <div className="metric-value">{evolutionAverage}%</div>
-          <div className="metric-detail">{attendanceRate}% de comparecimento no mês</div>
-        </div>
-      </section>
-
-      <section className="executive-ops-strip">
-        <div className="ops-health-card">
-          <div className="section-kicker">Saúde operacional</div>
-          <h3>{attendanceRate}% de comparecimento</h3>
-          <p>{occupancy}% de ocupação hoje, {criticalPatients.length} paciente{criticalPatients.length === 1 ? '' : 's'} pedindo atenção.</p>
-        </div>
-        <div className="ops-priority-grid">
-          {recommendedMoves.map(item => (
-            <button key={`${item.label}-${item.title}`} className="ops-priority-card" onClick={() => navigate(item.route)}>
-              <span>{item.label}</span>
-              <strong>{item.title}</strong>
-              <small>{item.detail}</small>
+      {/* ── 3. PRIORITY STRIP ──────────────────────────────────────────────── */}
+      {dayPriorities.length > 0 && (
+        <div className="priority-flow">
+          {dayPriorities.map(item => (
+            <button
+              key={`${item.label}-${item.title}`}
+              className="priority-flow-card"
+              onClick={() => navigate(item.route)}
+            >
+              <span className="priority-flow-label">{item.label}</span>
+              <strong className="priority-flow-title">{item.title}</strong>
+              <span className="priority-flow-detail">{item.detail}</span>
             </button>
           ))}
+          {conflictsToday > 0 && (
+            <button className="priority-flow-card priority-flow-alert" onClick={() => navigate('/agenda')}>
+              <span className="priority-flow-label">Conflito de agenda</span>
+              <strong className="priority-flow-title">{conflictsToday} conflito{conflictsToday > 1 ? 's' : ''}</strong>
+              <span className="priority-flow-detail">Verificar e resolver</span>
+            </button>
+          )}
         </div>
-      </section>
+      )}
 
-      <ClinicalRelationshipInsights onOpenPatient={id => navigate(`/prontuario/${id}`)} />
+      {/* ── 4. MAIN LAYOUT ─────────────────────────────────────────────────── */}
+      <div className="command-main">
 
-      <div className="dashboard-grid" style={{ gap: 22 }}>
-        <div>
-          <section className="card" style={{ marginBottom: 20 }}>
-            <div className="card-header">
+        {/* ── LEFT: clinical timeline + returns ── */}
+        <div className="command-content">
+
+          {/* Today's clinical flow */}
+          <section className="today-clinical-flow">
+            <div className="flow-header">
               <div>
-                <h3 className="card-title">Agenda de hoje</h3>
-                <p className="card-subtitle">{new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                <div className="section-kicker">Fluxo clínico do dia</div>
+                <h3 className="flow-title">Atendimentos de hoje</h3>
+                {todaySlots.length > 0 && (
+                  <p className="flow-sub">
+                    {doneSlots.length} concluído{doneSlots.length !== 1 ? 's' : ''} · {pendingSlots.length} pendente{pendingSlots.length !== 1 ? 's' : ''}
+                    {nextSlot && ` · próximo às ${nextSlot.time}`}
+                  </p>
+                )}
               </div>
-              <button className="btn btn-sm btn-secondary" onClick={() => navigate('/agenda')}>Ver agenda completa</button>
+              <button className="btn btn-sm btn-secondary" onClick={() => navigate('/agenda')}>
+                Ver agenda
+              </button>
             </div>
 
             {todaySlots.length === 0 ? (
-              <div className="empty-state">
+              <div className="flow-empty">
                 <div className="empty-icon" />
-                <h3>Sem atendimentos hoje</h3>
-                <p>Use o dia para reativar pacientes ou organizar protocolos.</p>
-                <button className="btn btn-primary btn-sm" style={{ marginTop: 14 }} onClick={() => navigate('/agenda')}>Agendar atendimento</button>
+                <h4>Sem atendimentos hoje</h4>
+                <p>Use este tempo para revisar retornos, atualizar evoluções e planejar a semana clínica.</p>
+                <button className="btn btn-primary btn-sm" style={{ marginTop: 16 }} onClick={() => navigate('/agenda')}>
+                  Agendar atendimento
+                </button>
               </div>
             ) : (
-              <div className="clinical-list">
+              <div className="clinical-flow-list">
                 {todaySlots.map((slot, idx) => {
                   const patient = getPatientById(slot.patientId)
                   const servico = getServicoById(slot.serviceId)
+                  const risk = patient ? getPatientRisk(patient, agendaSlots) : null
+                  const isNext = slot.id === nextSlot?.id
                   const isLast = idx === todaySlots.length - 1
                   return (
                     <div
                       key={slot.id}
-                      className="today-slot-row"
-                      onClick={() => navigate('/agenda')}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 16,
-                        padding: '17px 22px',
-                        borderBottom: isLast ? 'none' : '1px solid var(--border-light)',
-                        cursor: 'pointer',
-                        borderLeft: `4px solid ${STATUS_COLOR[slot.status] || 'transparent'}`,
-                      }}
+                      className={`flow-entry${isNext ? ' flow-entry-next' : ''}`}
+                      style={{ borderBottom: isLast ? 'none' : '1px solid var(--border-light)' }}
                     >
-                      <div className="today-slot-time" style={{ minWidth: 52, fontWeight: 700, color: 'var(--text)' }}>{slot.time}</div>
-                      <div className="slot-service-mark" style={{ color: servico?.color || 'var(--primary)' }}>{serviceInitials(servico?.name)}</div>
-                      <div className="today-slot-info" style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 650 }}>{patient?.name || 'Paciente não informado'}</div>
-                        <div className="metric-detail">{servico?.name || 'Serviço'} · {slot.duration}min · {slot.professional}</div>
+                      {/* Time column */}
+                      <div className="flow-time-col">
+                        <span className="flow-time">{slot.time}</span>
+                        <span className="flow-duration">{slot.duration}min</span>
                       </div>
-                      <div className="today-slot-status">
-                        <span className="badge badge-muted" style={{ color: STATUS_COLOR[slot.status] }}>{slot.status}</span>
+
+                      {/* Status indicator */}
+                      <div
+                        className="flow-status-bar"
+                        style={{ background: STATUS_COLOR[slot.status] || 'var(--border)' }}
+                        title={slot.status}
+                      />
+
+                      {/* Card body */}
+                      <div className="flow-card">
+                        <div className="flow-card-top">
+                          <div className="flow-patient-row">
+                            <button
+                              className="flow-patient-name"
+                              onClick={() => navigate(`/prontuario/${slot.patientId}`)}
+                            >
+                              {patient?.name || 'Paciente não informado'}
+                            </button>
+                            <RiskPill risk={risk} />
+                          </div>
+                          <span
+                            className="flow-status-badge"
+                            style={{ color: STATUS_COLOR[slot.status], background: STATUS_BG[slot.status] }}
+                          >
+                            {slot.status}
+                          </span>
+                        </div>
+
+                        <div className="flow-meta">
+                          <span className="flow-service-dot" style={{ background: servico?.color || 'var(--primary)' }} />
+                          {servico?.name || 'Serviço'} · {slot.professional || 'Profissional'}
+                        </div>
+
+                        {slot.evolucao && (
+                          <p className="flow-note">"{slot.evolucao}"</p>
+                        )}
+
+                        <div className="flow-actions">
+                          <button
+                            className="flow-action-btn"
+                            onClick={() => navigate(`/prontuario/${slot.patientId}`)}
+                          >
+                            Ver jornada
+                          </button>
+                          <button
+                            className="flow-action-btn"
+                            onClick={() => navigate('/agenda')}
+                          >
+                            {slot.status === 'Realizado' ? 'Ver sessão' : 'Gerenciar'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )
@@ -299,31 +331,26 @@ export default function Dashboard() {
             )}
           </section>
 
-          <section className="card">
-            <div className="card-header">
+          {/* Awaiting return */}
+          {awaitingReturn.length > 0 && (
+            <section className="card return-section">
+              <div className="card-header">
+                <div>
+                  <h3 className="card-title">Pacientes aguardando retorno</h3>
+                  <p className="card-subtitle">Continuidade do cuidado</p>
+                </div>
+                <button className="btn btn-sm btn-secondary" onClick={() => navigate('/crm')}>Ver todos</button>
+              </div>
               <div>
-                <h3 className="card-title">Pacientes para retorno</h3>
-                <p className="card-subtitle">Relacionamento e continuidade de cuidado</p>
-              </div>
-              <button className="btn btn-sm btn-secondary" onClick={() => navigate('/crm')}>Ver relacionamento</button>
-            </div>
-            {awaitingReturn.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-icon" />
-                <h3>Nenhum retorno pendente</h3>
-                <p>Os pacientes em acompanhamento estão em dia.</p>
-              </div>
-            ) : (
-              <div className="clinical-list">
                 {awaitingReturn.slice(0, 5).map((p, i) => {
                   const last = agendaSlots.filter(s => s.patientId === p.id && s.status === 'Realizado').sort((a, b) => b.date.localeCompare(a.date))[0]
                   const days = last ? daysSince(last.date) : null
                   const initials = p.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
                   return (
-                    <div key={p.id} className="clinical-row" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '15px 22px', borderBottom: i < awaitingReturn.slice(0, 5).length - 1 ? '1px solid var(--border-light)' : 'none' }}>
+                    <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 22px', borderBottom: i < Math.min(awaitingReturn.length, 5) - 1 ? '1px solid var(--border-light)' : 'none' }}>
                       <div className="avatar avatar-sm">{initials}</div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 650 }}>{p.name}</div>
+                        <div style={{ fontWeight: 650, fontSize: 14 }}>{p.name}</div>
                         <div className="metric-detail">{days !== null ? `Última sessão há ${days} dias` : 'Ainda sem sessão registrada'}</div>
                       </div>
                       <button className="btn btn-xs btn-whatsapp" onClick={() => navigate('/crm')}>Preparar contato</button>
@@ -331,71 +358,61 @@ export default function Dashboard() {
                   )
                 })}
               </div>
-            )}
-          </section>
+            </section>
+          )}
         </div>
 
-        <aside>
-          <section className="card" style={{ marginBottom: 18 }}>
+        {/* ── RIGHT SIDEBAR ── */}
+        <aside className="command-sidebar">
+
+          {/* Quick stats */}
+          <section className="card sidebar-stats-card">
             <div className="card-header">
-              <h3 className="card-title">Operação do dia</h3>
-              <button className="btn btn-ghost btn-xs" onClick={() => navigate('/agenda')}>Ver agenda</button>
+              <h3 className="card-title">Operação</h3>
             </div>
-            <div className="card-body">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div style={{ padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 10 }}>
-                  <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Profissionais</div>
-                  <div style={{ fontWeight: 700, fontSize: 20, color: 'var(--text)', marginBottom: 6 }}>{todayProfIds.length}</div>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                    {todayProfs.map(p => (
-                      <span key={p.id} title={p.name} style={{ width: 20, height: 20, borderRadius: '50%', background: p.color, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 700 }}>
-                        {p.name[0]}
-                      </span>
-                    ))}
-                    {todayProfIds.length === 0 && <span style={{ fontSize: 12, color: 'var(--text-3)' }}>—</span>}
-                  </div>
-                </div>
-                <div style={{ padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 10 }}>
-                  <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Salas em uso</div>
-                  <div style={{ fontWeight: 700, fontSize: 20, color: 'var(--text)', marginBottom: 6 }}>{todayRoomIds.length}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-3)' }}>
-                    {todayRoomIds.length > 0
-                      ? todayRoomIds.map(id => rooms.find(r => r.id === id)?.number).filter(Boolean).map(n => `Sala ${n}`).join(', ')
-                      : '—'}
-                  </div>
-                </div>
-                <div style={{ padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 10 }}>
-                  <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ocupação</div>
-                  <div style={{ fontWeight: 700, fontSize: 20, color: 'var(--text)' }}>{occupancy}%</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>{todaySlots.length} slot{todaySlots.length !== 1 ? 's' : ''} hoje</div>
-                </div>
-                <div style={{ padding: '10px 12px', background: conflictsToday > 0 ? 'var(--warning-light)' : 'var(--surface-2)', borderRadius: 10 }}>
-                  <div style={{ fontSize: 11, color: conflictsToday > 0 ? 'var(--warning)' : 'var(--text-3)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Conflitos</div>
-                  <div style={{ fontWeight: 700, fontSize: 20, color: conflictsToday > 0 ? 'var(--warning)' : 'var(--success)' }}>{conflictsToday}</div>
-                  <div style={{ fontSize: 12, color: conflictsToday > 0 ? 'var(--warning)' : 'var(--text-3)', marginTop: 4 }}>
-                    {conflictsToday > 0 ? 'Verificar agenda' : 'Sem conflitos'}
-                  </div>
-                </div>
+            <div className="card-body" style={{ padding: '14px 18px' }}>
+              <div className="sidebar-stat-row">
+                <span className="sidebar-stat-label">Profissionais hoje</span>
+                <span className="sidebar-stat-value">{todayProfIds.length}</span>
               </div>
-              {conflictsToday > 0 && (
-                <div style={{ marginTop: 12, padding: '10px 12px', background: 'var(--warning-light)', borderRadius: 10, borderLeft: '3px solid var(--warning)', fontSize: 13, color: 'var(--warning)', fontWeight: 600 }}>
-                  ⚠ {conflictsToday} conflito{conflictsToday > 1 ? 's' : ''} detectado{conflictsToday > 1 ? 's' : ''} na agenda de hoje
-                </div>
-              )}
+              <div className="sidebar-stat-row">
+                <span className="sidebar-stat-label">Salas em uso</span>
+                <span className="sidebar-stat-value">{todayRoomIds.length}</span>
+              </div>
+              <div className="sidebar-stat-row">
+                <span className="sidebar-stat-label">Ocupação</span>
+                <span className="sidebar-stat-value">{occupancy}%</span>
+              </div>
+              <div className="sidebar-stat-row">
+                <span className="sidebar-stat-label">Conflitos</span>
+                <span className="sidebar-stat-value" style={{ color: conflictsToday > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                  {conflictsToday > 0 ? `${conflictsToday} ⚠` : 'Nenhum'}
+                </span>
+              </div>
+              <div className="sidebar-stat-row">
+                <span className="sidebar-stat-label">Evolução clínica</span>
+                <span className="sidebar-stat-value">{evolutionAverage}%</span>
+              </div>
             </div>
           </section>
 
-          <section className="card" style={{ marginBottom: 18 }}>
-            <div className="card-header"><h3 className="card-title">Próximos atendimentos</h3></div>
+          {/* Upcoming */}
+          <section className="card">
+            <div className="card-header">
+              <h3 className="card-title">Próximos atendimentos</h3>
+            </div>
             {upcomingSlots.length === 0 ? (
-              <div className="empty-state"><div className="empty-icon" /><h3>Agenda futura livre</h3></div>
+              <div className="empty-state" style={{ padding: '24px 18px' }}>
+                <div className="empty-icon" />
+                <h4>Agenda futura livre</h4>
+              </div>
             ) : (
               <div>
                 {upcomingSlots.map((slot, i) => {
                   const p = getPatientById(slot.patientId)
                   const srv = getServicoById(slot.serviceId)
                   return (
-                    <div key={slot.id} className="clinical-row" style={{ padding: '14px 18px', borderBottom: i < upcomingSlots.length - 1 ? '1px solid var(--border-light)' : 'none', display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <div key={slot.id} style={{ padding: '13px 18px', borderBottom: i < upcomingSlots.length - 1 ? '1px solid var(--border-light)' : 'none', display: 'flex', gap: 12, alignItems: 'center' }}>
                       <div className="service-mark" style={{ color: srv?.color || 'var(--primary)' }}>{serviceInitials(srv?.name)}</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 650, fontSize: 13.5 }}>{p?.name || 'Paciente'}</div>
@@ -408,10 +425,11 @@ export default function Dashboard() {
             )}
           </section>
 
-          <section className="card" style={{ marginBottom: 18 }}>
+          {/* Financial snapshot */}
+          <section className="card">
             <div className="card-header">
               <h3 className="card-title">Saúde financeira</h3>
-              <button className="btn btn-ghost btn-xs" onClick={() => navigate('/financeiro')}>Visão executiva</button>
+              <button className="btn btn-ghost btn-xs" onClick={() => navigate('/financeiro')}>Detalhar</button>
             </div>
             <div className="card-body">
               {[
@@ -419,50 +437,34 @@ export default function Dashboard() {
                 ['Despesas', currency(monthExpenses), 'var(--danger)'],
                 ['Resultado', currency(balance), balance >= 0 ? 'var(--success)' : 'var(--danger)'],
               ].map(([label, val, color]) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-light)' }}>
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '9px 0', borderBottom: '1px solid var(--border-light)' }}>
                   <span className="metric-detail">{label}</span>
-                  <strong style={{ color }}>{val}</strong>
+                  <strong style={{ color, fontSize: 13.5 }}>{val}</strong>
                 </div>
               ))}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: 14, gap: 10 }}>
-                <span style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 650, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Receita · 6 meses</span>
+              {monthPending > 0 && (
+                <div style={{ marginTop: 10, padding: '8px 10px', background: 'var(--warning-light)', borderRadius: 8, fontSize: 12, color: 'var(--warning)', fontWeight: 600 }}>
+                  {currency(monthPending)} a receber
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 12 }}>
                 <Sparkline values={sparkValues} color={balance >= 0 ? 'var(--success)' : 'var(--danger)'} />
               </div>
             </div>
           </section>
 
+          {/* Clinical intelligence compact */}
           <ClinicalIntelligence
             patients={patients}
             slots={agendaSlots}
             compact
             onOpenPatient={id => navigate(`/prontuario/${id}`)}
           />
-
-          <section className="card">
-            <div className="card-header"><h3 className="card-title">Demanda por serviço</h3></div>
-            <div className="card-body">
-              {servicos.length === 0 ? (
-                <p style={{ fontSize: 13, color: 'var(--text-3)', textAlign: 'center', padding: '12px 0' }}>Nenhum serviço cadastrado.</p>
-              ) : servicos.map((srv, idx) => {
-                const total = serviceDemandTotals[srv.id]
-                const pct = Math.round((total / maxDemandTotal) * 100)
-                return (
-                  <div key={srv.id} style={{ padding: '10px 0', borderBottom: idx < servicos.length - 1 ? '1px solid var(--border-light)' : 'none' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 7 }}>
-                      <div className="service-mark" style={{ color: srv.color }}>{serviceInitials(srv.name)}</div>
-                      <span style={{ flex: 1, fontWeight: 600 }}>{srv.name}</span>
-                      <span className="metric-detail">{total} {total !== 1 ? 'sessões' : 'sessão'}</span>
-                    </div>
-                    <div style={{ height: 4, borderRadius: 2, background: 'var(--border-light)', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, borderRadius: 2, background: srv.color || 'var(--primary)', opacity: 0.65, transition: 'width 0.4s ease' }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
         </aside>
       </div>
+
+      {/* ── 5. CLINICAL RELATIONSHIP INSIGHTS (full width) ─────────────────── */}
+      <ClinicalRelationshipInsights onOpenPatient={id => navigate(`/prontuario/${id}`)} />
     </div>
   )
 }

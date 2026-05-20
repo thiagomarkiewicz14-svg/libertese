@@ -3939,3 +3939,485 @@ tbody tr:hover td { background: rgba(79,140,255,0.03); }
   -webkit-font-smoothing: antialiased;
   letter-spacing: -0.015em;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD V2 — Clinical Command Center
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────────── */
+.dashboard-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 28px;
+  max-width: 1360px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Command Bar ─────────────────────────────────────────────────────────────── */
+.command-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
+  padding: 16px 22px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+}
+.command-bar-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.command-date {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A2B4A;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  margin: 0;
+}
+.command-context-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #4F8CFF;
+  background: rgba(79,140,255,0.08);
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.command-kpis {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+.cq-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0 18px;
+}
+.cq-value {
+  font-size: 20px;
+  font-weight: 750;
+  color: #1A2B4A;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+.cq-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #8B9DB8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.cq-sep {
+  width: 1px;
+  height: 28px;
+  background: rgba(0,0,0,0.07);
+  flex-shrink: 0;
+}
+.command-bar-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Command Insight (AI Banner override) ────────────────────────────────────── */
+.command-insight.insight-banner {
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+.skeleton-insight {
+  background: rgba(0,0,0,0.03) !important;
+  border-color: transparent !important;
+}
+.skeleton-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.06);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.06);
+  margin-bottom: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-line.short { width: 100px; }
+
+/* ── Priority Flow Strip ─────────────────────────────────────────────────────── */
+.priority-flow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.priority-flow-card {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 14px 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.priority-flow-card:hover {
+  border-color: rgba(79,140,255,0.20);
+  background: rgba(79,140,255,0.03);
+  box-shadow: 0 2px 10px rgba(79,140,255,0.08);
+  transform: translateY(-1px);
+}
+.priority-flow-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #4F8CFF;
+}
+.priority-flow-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A2B4A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.priority-flow-detail {
+  font-size: 12px;
+  color: #8B9DB8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.priority-flow-alert {
+  border-color: rgba(220,38,38,0.18);
+}
+.priority-flow-alert .priority-flow-label {
+  color: #DC2626;
+}
+.priority-flow-alert:hover {
+  border-color: rgba(220,38,38,0.28);
+  background: rgba(220,38,38,0.03);
+}
+
+/* ── Main Layout ─────────────────────────────────────────────────────────────── */
+.command-main {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+.command-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.command-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* ── Today Clinical Flow ─────────────────────────────────────────────────────── */
+.today-clinical-flow {
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+.flow-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.flow-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A2B4A;
+  letter-spacing: -0.02em;
+  margin: 4px 0 0;
+}
+.flow-sub {
+  font-size: 12.5px;
+  color: #8B9DB8;
+  margin: 4px 0 0;
+}
+
+/* Flow empty state */
+.flow-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  text-align: center;
+}
+.flow-empty h4 {
+  font-size: 15px;
+  font-weight: 650;
+  color: #1A2B4A;
+  margin: 0;
+}
+.flow-empty p {
+  font-size: 13px;
+  color: #8B9DB8;
+  max-width: 340px;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* Clinical flow list */
+.clinical-flow-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Flow entry */
+.flow-entry {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 14px 22px 14px 0;
+  transition: background 0.12s ease;
+}
+.flow-entry:hover {
+  background: rgba(79,140,255,0.02);
+}
+.flow-entry-next {
+  background: rgba(79,140,255,0.04);
+}
+.flow-entry-next:hover {
+  background: rgba(79,140,255,0.06);
+}
+
+/* Time column */
+.flow-time-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 14px 0 18px;
+  min-width: 68px;
+  flex-shrink: 0;
+}
+.flow-time {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1A2B4A;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  line-height: 1.2;
+}
+.flow-duration {
+  font-size: 10.5px;
+  color: #8B9DB8;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status bar (left colored indicator) */
+.flow-status-bar {
+  width: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin: 2px 14px 2px 0;
+  min-height: 44px;
+}
+
+/* Flow card body */
+.flow-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.flow-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.flow-patient-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.flow-patient-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A2B4A;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.12s ease;
+}
+.flow-patient-name:hover {
+  color: #4F8CFF;
+}
+.flow-status-badge {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Flow meta (service + professional) */
+.flow-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #4A5F7A;
+}
+.flow-service-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Evolution note */
+.flow-note {
+  font-size: 12px;
+  color: #8B9DB8;
+  font-style: italic;
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Flow actions */
+.flow-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+.flow-action-btn {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #4F8CFF;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.12s ease;
+  text-decoration: none;
+}
+.flow-action-btn:hover {
+  color: #2D6BE4;
+}
+.flow-action-btn + .flow-action-btn::before {
+  content: '·';
+  color: #8B9DB8;
+  margin-right: 8px;
+  pointer-events: none;
+}
+
+/* ── Sidebar Stats Card ───────────────────────────────────────────────────────── */
+.sidebar-stats-card {}
+.sidebar-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.sidebar-stat-row:last-child {
+  border-bottom: none;
+}
+.sidebar-stat-label {
+  font-size: 13px;
+  color: #4A5F7A;
+}
+.sidebar-stat-value {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1A2B4A;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ── Return Section ───────────────────────────────────────────────────────────── */
+.return-section {}
+
+/* ── Service Mark (initials in upcoming) ─────────────────────────────────────── */
+.service-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(79,140,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+/* ── Warning / Danger light variables (used inline in Dashboard) ─────────────── */
+:root {
+  --warning-light: rgba(217,119,6,0.08);
+  --danger-light:  rgba(220,38,38,0.08);
+  --success-light: rgba(22,163,74,0.08);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .command-main {
+    grid-template-columns: 1fr;
+  }
+  .command-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .dashboard-v2 { padding: 16px; gap: 14px; }
+  .command-bar { flex-wrap: wrap; }
+  .command-kpis { flex-wrap: wrap; }
+  .priority-flow { flex-direction: column; }
+  .command-sidebar { grid-template-columns: 1fr; }
+  .flow-entry { padding: 12px 14px 12px 0; }
+  .flow-time-col { min-width: 56px; padding: 0 10px 0 14px; }
+}
