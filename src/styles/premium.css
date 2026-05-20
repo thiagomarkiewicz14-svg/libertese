@@ -3890,6 +3890,32 @@ tbody tr:hover td { background: rgba(79,140,255,0.03); }
 .skeleton-line::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.70), transparent); }
 
 /* ── Appointments ─────────────────────────────────────────────────────────────── */
+.appointment-command-card {
+  background: #FFFFFF;
+  border-color: rgba(0,0,0,0.07);
+}
+.appointment-agora,
+.appointment-em-andamento {
+  background: #FFFFFF;
+  border-color: rgba(22,163,74,0.22);
+}
+.appointment-atrasado {
+  background: #FFFFFF;
+  border-color: rgba(217,119,6,0.22);
+}
+.appointment-realizado {
+  background: #FAFBFC;
+  border-color: rgba(0,0,0,0.05);
+}
+.appointment-time-block small { color: #4F8CFF; }
+.appointment-atrasado .appointment-time-block small { color: var(--warning); }
+.appointment-agora .appointment-time-block small,
+.appointment-em-andamento .appointment-time-block small,
+.appointment-current .appointment-time-block small { color: var(--success); }
+.appointment-meta-row span {
+  background: rgba(79,140,255,0.07);
+  color: #4F8CFF;
+}
 .appointment-expanded { background: rgba(79,140,255,0.03); border-top-color: rgba(0,0,0,0.05); }
 .appointment-therapist-note { background: rgba(79,140,255,0.04); border-color: rgba(79,140,255,0.12); }
 
@@ -3921,6 +3947,17 @@ tbody tr:hover td { background: rgba(79,140,255,0.03); }
 
 /* ── Automation rows ────────────────────────────────────────────────────────── */
 .automation-row:hover { background: rgba(79,140,255,0.04); }
+
+/* ── Remaining dark surfaces — light theme overrides ────────────────────────── */
+.plan-card-header { background: #F7F9FC; }
+.info-item { background: rgba(247,249,252,0.90); }
+.clinical-progress-summary { background: #FFFFFF; border-color: rgba(0,0,0,0.06); }
+.body-silhouette { background: #F0F4FA; border-color: rgba(0,0,0,0.07); }
+.report-summary-grid > div { background: #F7F9FC; }
+.exercise-video-thumb span { background: rgba(79,140,255,0.09); color: #4F8CFF; }
+.portal-next-steps { background: #FFFFFF; border-color: rgba(0,0,0,0.06); }
+.session-report-note { background: rgba(79,140,255,0.08); color: #4F8CFF; }
+.evolucao-item { background: #FFFFFF; border-color: rgba(0,0,0,0.06); }
 
 /* ─── NUMERIC RENDERING — premium tabular ────────────────────────────────────── */
 [class*="-value"],
